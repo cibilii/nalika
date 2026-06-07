@@ -2,12 +2,14 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { generateTrackingNumber } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request) {
   try {
     const body = await request.json();
     const { serviceId, date, slot, customer } = body;
 
-    // اعتبارسنجی
+    // اعتبارسنجی فیلدهای ضروری
     if (!serviceId || !date || !slot || !customer) {
       return NextResponse.json(
         { error: "فیلدهای الزامی تکمیل نشده‌اند" },
@@ -15,9 +17,13 @@ export async function POST(request) {
       );
     }
 
-    // بررسی رزرو تکراری
+    // بررسی تداخل اسلات
     const existing = await prisma.booking.findFirst({
-      where: { date, slot, status: "CONFIRMED" },
+      where: {
+        date,
+        slot,
+        status: "CONFIRMED",
+      },
     });
     if (existing) {
       return NextResponse.json(
@@ -26,7 +32,7 @@ export async function POST(request) {
       );
     }
 
-    // بررسی رزرو تکراری برای همان مشتری
+    // بررسی رزرو تکراری برای همان مشتری (با شماره تلفن)
     const duplicate = await prisma.booking.findFirst({
       where: {
         date,
@@ -64,8 +70,8 @@ export async function POST(request) {
       });
     }
 
-    // ایجاد رزرو (بدون portfolioId)
     const trackingNumber = generateTrackingNumber();
+
     const booking = await prisma.booking.create({
       data: {
         trackingNumber,
@@ -74,12 +80,16 @@ export async function POST(request) {
         status: "CONFIRMED",
         customerId: dbCustomer.id,
         serviceId: parseInt(serviceId),
+        // هیچ فیلد اضافه‌ای (portfolioId) وجود ندارد
       },
     });
 
     return NextResponse.json({ trackingNumber, booking }, { status: 201 });
   } catch (error) {
-    console.error("Booking error:", error);
-    return NextResponse.json({ error: "خطای سرور رخ داد" }, { status: 500 });
+    console.error("POST /api/bookings error:", error);
+    return NextResponse.json(
+      { error: "خطای سرور رخ داد" },
+      { status: 500 }
+    );
   }
 }

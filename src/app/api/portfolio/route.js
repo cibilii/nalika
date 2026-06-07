@@ -1,11 +1,17 @@
-import { prisma } from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const items = await prisma.portfolio.findMany({ orderBy: { id: 'desc' } });
-    return NextResponse.json(items);
+    const portfolio = await prisma.portfolio.findMany();
+    return NextResponse.json(portfolio);
   } catch (error) {
-    return NextResponse.json({ error: 'خطا' }, { status: 500 });
+    console.error("GET /api/portfolio error:", error);
+    return NextResponse.json(
+      { error: "خطا در دریافت گالری" },
+      { status: 500 }
+    );
   }
 }
