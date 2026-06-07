@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Link from "next/link";
 import Card from "@/components/ui/Card";
 import { prisma } from "@/lib/prisma";
@@ -58,18 +60,14 @@ export default async function Dashboard() {
           <Card className="hover:border-pink-500/30 transition-colors cursor-pointer">
             <CalendarCheck className="w-8 h-8 text-pink-500 mb-4" />
             <h3 className="font-semibold text-lg">مدیریت رزروها</h3>
-            <p className="text-sm text-zinc-400 mt-1">
-              مشاهده و لغو نوبت‌ها
-            </p>
+            <p className="text-sm text-zinc-400 mt-1">مشاهده و لغو نوبت‌ها</p>
           </Card>
         </Link>
         <Link href="/admin/services">
           <Card className="hover:border-pink-500/30 transition-colors cursor-pointer">
             <Scissors className="w-8 h-8 text-pink-500 mb-4" />
             <h3 className="font-semibold text-lg">مدیریت خدمات</h3>
-            <p className="text-sm text-zinc-400 mt-1">
-              افزودن و ویرایش سرویس‌ها
-            </p>
+            <p className="text-sm text-zinc-400 mt-1">افزودن و ویرایش سرویس‌ها</p>
           </Card>
         </Link>
         <Link href="/admin/portfolio">
