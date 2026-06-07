@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Customer {
@@ -23,15 +23,14 @@ model Service {
   category  String
   bookings  Booking[]
 }
+
 model Portfolio {
-  id          Int      @id @default(autoincrement())
-  title       String
-  imageUrl    String
-  category    String
-  description String?
-  serviceId   Int?
-  bookings    Booking[] // اضافه شد: رابطه معکوس با Booking
+  id        Int    @id @default(autoincrement())
+  title     String
+  imageUrl  String
+  category  String
 }
+
 model Booking {
   id              Int      @id @default(autoincrement())
   trackingNumber  String   @unique
@@ -41,8 +40,6 @@ model Booking {
   createdAt       DateTime @default(now())
   customerId      Int
   serviceId       Int
-  portfolioId     Int?
   customer        Customer @relation(fields: [customerId], references: [id])
   service         Service  @relation(fields: [serviceId], references: [id])
-  portfolio       Portfolio? @relation(fields: [portfolioId], references: [id])
 }
